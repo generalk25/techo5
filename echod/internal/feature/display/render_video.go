@@ -38,7 +38,11 @@ func (r *renderer) videoPage(s scene) (over image.Rectangle) {
 	r.zmu.Lock()
 	r.videoZones = nil
 	r.zmu.Unlock()
-	if s.videoLive {
+	if s.videoLive || s.video.Phase == video.Loading {
+		// Loading draws clear, like live: our build plays face clips back to
+		// back, and a black "loading" page must never cover the previous
+		// face while the next clip's first frame is on its way. The black
+		// page below is only for a video that could not be played at all.
 		draw.Draw(r.dst, r.dst.Rect, image.Transparent, image.Point{}, draw.Src)
 	} else {
 		draw.Draw(r.dst, r.dst.Rect, image.Black, image.Point{}, draw.Src)
